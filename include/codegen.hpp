@@ -9,6 +9,7 @@
 class Codegen {
 private:
     Op* head;
+    std::string filename;
     std::ofstream assembly;
     unsigned int label_num;
     std::stack<unsigned int> unclosed_labels;
@@ -29,7 +30,7 @@ private:
     void gen_back();
 
 public:
-    Codegen(Op* head);
+    Codegen(Op* head, std::string filename);
     ~Codegen();
 
     void generate();

@@ -1,9 +1,9 @@
 #include "../include/codegen.hpp"
-#include <iostream>
 
-Codegen::Codegen(Op* head) : head(head) {
+Codegen::Codegen(Op* head, std::string filename) : head(head) {
     this->label_num = 0;
-    this->assembly = std::ofstream("asm.s");
+    std::string output_name = "/tmp/" + filename + ".s";
+    this->assembly = std::ofstream(output_name);
  }
 
 Codegen::~Codegen() { }
@@ -23,6 +23,7 @@ void Codegen::finalize_stream() {
     this->assembly << "\tmov rax, 60\n";
     this->assembly << "\tmov rdi, 0\n";
     this->assembly << "\tsyscall\n";
+    this->assembly.close();
 }
 
 void Codegen::gen_right() {
@@ -117,5 +118,4 @@ void Codegen::generate() {
     initialize_stream();
     walk_ast(this->head);
     finalize_stream();
-    // std::cout << this->assembly.str() << std::endl;
 }
