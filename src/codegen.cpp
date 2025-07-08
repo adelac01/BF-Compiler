@@ -8,14 +8,6 @@ Codegen::Codegen(Op* head) : head(head) {
 
 Codegen::~Codegen() { }
 
-/**
- * TODO:
- *   - Add option to expand tape/array size
- *   - Add option to expand size for a cell
- *   - Allow ability for "negative" cell entries
- *   - Add some optimizations
- */
-
 void Codegen::initialize_stream() {
     this->assembly << ".intel_syntax noprefix\n\n";
     this->assembly << ".section .bss\n";
@@ -58,9 +50,12 @@ void Codegen::gen_out() {
     this->assembly << "\tsyscall\n";
 }
 
-//TODO: complete this function
 void Codegen::gen_in() {
-
+    this->assembly << "\tmov rax, 0\n";
+    this->assembly << "\tmov rdi, 0\n";
+    this->assembly << "\tlea rsi, BYTE PTR[tape + rbx]\n";
+    this->assembly << "\tmov rdx, 1\n";
+    this->assembly << "\tsyscall\n";
 }
 
 void Codegen::gen_past() {

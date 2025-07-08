@@ -3,9 +3,7 @@
 Parser::Parser(std::vector<Token> token_stream) : token_stream(token_stream) {}
 
 Parser::~Parser() { 
-    Op *node = this->head;
-    clear_memory(node);
-
+    clear_memory(this->head);
 }
 
 void Parser::clear_memory(Op *node) {
