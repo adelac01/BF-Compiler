@@ -15,8 +15,9 @@ void Codegen::initialize_stream() {
     this->assembly << "\t.space "<< this->array_size <<"\n\n";
     this->assembly << ".section .text\n";
     this->assembly << ".global main\n";
+    this->assembly << "_start:\n";
+    this->assembly << "\tmov rbx, 0\n\n";
     this->assembly << "main:\n";
-    this->assembly << "\tmov rbx, 0\n";
 }
 
 void Codegen::finalize_stream() {

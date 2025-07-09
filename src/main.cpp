@@ -60,7 +60,7 @@ void set_flags(uint8_t &flags, struct flag_values &fv, int &i, char **argv) {
         i += 1;
     } else if(arg == "-O") {
         flags |= ENABLE_OPTIMIZATIONS;
-    } else if(arg == "-help") {
+    } else if(arg == "--help") {
         flags |= PRINT_HELP;
     } else {
         flags |= FLAG_UNKNOWN;
