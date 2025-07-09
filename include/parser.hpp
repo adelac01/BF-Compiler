@@ -8,9 +8,10 @@
 class Parser {
 private:
     std::vector<Token> token_stream;
-    Op* head;
+    unsigned int stream_ptr;
+    Op *head;
 
-    Op* O(unsigned int i);
+    unsigned int consume_token();
     void clear_memory(Op *node);
 
 public:

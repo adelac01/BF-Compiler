@@ -1,6 +1,9 @@
 #include "../include/parser.hpp"
 
-Parser::Parser(std::vector<Token> token_stream) : token_stream(token_stream) {}
+Parser::Parser(std::vector<Token> token_stream) : token_stream(token_stream) {
+    this->stream_ptr = 0;
+    this->head = nullptr;
+}
 
 Parser::~Parser() { 
     clear_memory(this->head);
@@ -15,13 +18,9 @@ void Parser::clear_memory(Op *node) {
     delete node;
 }
 
-Op* Parser::O(unsigned int i) {
-    if(i >= this->token_stream.size()) {
-        return nullptr;
-    }
-
+unsigned int Parser::consume_token() {
     unsigned int type;
-    switch(token_stream[i]) {
+    switch(token_stream[this->stream_ptr]) {
         case MOVE_RIGHT:
             type = RIGHT;
         break;
@@ -48,13 +47,26 @@ Op* Parser::O(unsigned int i) {
         break;
     }
 
-    Op *curr_node = new Op(type);
-    curr_node->next = this->O(i + 1);
-
-    return curr_node;
+    this->stream_ptr++;
+    return type;
 }
 
 Op* Parser::gen_ast() {
-    this->head = this->O(0);
+
+    if(this->token_stream.size() == 0) {
+        return nullptr;
+    }
+
+    Op *curr;
+    this->head = new Op(consume_token());
+    curr = this->head;
+
+    for(unsigned int i = 1; i < this->token_stream.size(); i++) {
+        curr->next = new Op(consume_token()); 
+        curr = curr->next;
+    }
+
+    curr->next = nullptr;
+
     return this->head;
 }

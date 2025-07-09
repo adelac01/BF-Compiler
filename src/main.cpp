@@ -109,8 +109,14 @@ int main(int argc, char **argv) {
     Codegen codegen(head, output_file);
     codegen.generate();
 
-    // assembly and linking stage
-    command = std::format("as -o /tmp/{}.o /tmp/{}.s && ld -o {} /tmp/{}.o; rm /tmp/{}*", output_file, output_file, output_file, output_file, output_file);
+    if(flags & 0x02) {
+        // move file from tmp if only doing compliation
+        command = std::format("mv /tmp/{}.s ./", output_file);
+    } else {
+        // assembly and linking stage
+        command = std::format("as -o /tmp/{}.o /tmp/{}.s && ld -o {} /tmp/{}.o; rm /tmp/{}*", output_file, output_file, output_file, output_file, output_file);
+    }
+
     system(command.c_str());
 
     return 0;
