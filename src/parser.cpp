@@ -67,6 +67,5 @@ Op* Parser::gen_ast() {
     }
 
     curr->next = nullptr;
-
     return this->head;
 }

@@ -8,39 +8,62 @@
 #include "../include/parser.hpp"
 #include "../include/codegen.hpp"
 
+#define DEFAULT_ARRAY_SIZE 30000
+#define DEFAULT_CELL_SIZE 8
+#define FILE_NAME
+
+#define SET_OUTPUT 0x01
+#define COMPILE_ONLY 0x02
+#define SET_ARRAY_SIZE 0x04
+#define SET_CELL_SIZE 0x08
+#define ENABLE_OPTIMIZATIONS 0x10
+#define PRINT_HELP 0x20
+#define FLAG_UNKNOWN 0x80
+
+struct flag_values {
+    std::string o_flag_value;
+    unsigned int a_flag_value;
+    unsigned int c_flag_value;
+};
+
 void print_help() {
     std::string help_string = "\
 Usage: bf [flags] filename\n\
 flags:\n\
-    -o <file>              Name output the specified file name.\n\
+    -o <file>              Name output file the name specified in <file>.\n\
     -S                     Only perform compilation. Generates assembly file.\n\
-    -a=<number>            Set array size of program.\n\
-    -c=<number>            Set cell size of an array entry.\n\
+    -a <number>            Set array size of program. Default array size is 30000\n\
+    -c <number>            Specify cell size of an array entry by number of bits. Number used must be valid. A list of valid numbers is given below.\n\
+                           Valid options: {8, 16, 32, 64}\n\
     -O                     Enable optimizations\n\
-    --help                 Print help message\n\
+    --help                 Print help message\
 ";
 
     std::cout << help_string << std::endl;
 }
 
-void set_flags(uint8_t &flags, unsigned int &o_flag_index, int &i, char **argv) {
+void set_flags(uint8_t &flags, struct flag_values &fv, int &i, char **argv) {
     std::string arg = argv[i];
     if(arg == "-o") {
-        flags |= 0x01;
-        o_flag_index = i + 1;
+        flags |= SET_OUTPUT;
+        fv.o_flag_value = argv[i + 1];
         i += 1;
     } else if(arg == "-S") {
-        flags |= 0x02;
+        flags |= COMPILE_ONLY;
     } else if(arg == "-a") {
-        flags |= 0x04;
+        flags |= SET_ARRAY_SIZE;
+        fv.a_flag_value = std::stoi(argv[i + 1]);
+        i += 1;
     } else if(arg == "-c") {
-        flags |= 0x08;
+        flags |= SET_CELL_SIZE;
+        fv.c_flag_value = std::stoi(argv[i + 1]);
+        i += 1;
     } else if(arg == "-O") {
-        flags |= 0x10;
+        flags |= ENABLE_OPTIMIZATIONS;
     } else if(arg == "-help") {
-        flags |= 0x20;
+        flags |= PRINT_HELP;
     } else {
-        flags |= 0x80;
+        flags |= FLAG_UNKNOWN;
     }
 }
 
@@ -58,7 +81,9 @@ int main(int argc, char **argv) {
      * bit 7: unrecognized flag 
      */
     uint8_t flags = 0;
-    unsigned int o_flag_index;
+    struct flag_values fv;
+    unsigned int array_size = DEFAULT_ARRAY_SIZE;
+    unsigned int cell_size = DEFAULT_CELL_SIZE;
     std::string output_file = "a.out";
     std::string input_file = ""; 
     std::string command;
@@ -69,7 +94,7 @@ int main(int argc, char **argv) {
     } else {
         for(int i = 1; i < argc; i++) {
             if(argv[i][0] == '-') {
-                set_flags(flags, o_flag_index, i, argv);
+                set_flags(flags, fv, i, argv);
             } else {
                 input_file = argv[i];
             }
@@ -77,18 +102,22 @@ int main(int argc, char **argv) {
     }
 
     // Walk through the different flags
-    if(flags & 0x80) {
+    if(flags & FLAG_UNKNOWN) {
         std::cout << "Error: Unrecognized flag." << std::endl;
         return 1;
     }
 
-    if(flags & 0x20) {
+    if(flags & PRINT_HELP) {
         print_help();
         return 0;
     }
 
-    if(flags & 0x01) {
-        output_file = argv[o_flag_index];
+    if(flags & SET_ARRAY_SIZE) {
+        array_size = fv.a_flag_value; 
+    }
+
+    if(flags & SET_OUTPUT) {
+        output_file = fv.o_flag_value;
     }
 
     // Lexer stage
@@ -105,11 +134,13 @@ int main(int argc, char **argv) {
     Parser parser(token_stream);
     Op *head = parser.gen_ast();
 
+    // optimization stage comes in here somewhere
+
     // Codegen stage
-    Codegen codegen(head, output_file);
+    Codegen codegen(head, output_file, array_size, cell_size);
     codegen.generate();
 
-    if(flags & 0x02) {
+    if(flags & COMPILE_ONLY) {
         // move file from tmp if only doing compliation
         command = std::format("mv /tmp/{}.s ./", output_file);
     } else {

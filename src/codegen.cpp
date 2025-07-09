@@ -1,6 +1,6 @@
 #include "../include/codegen.hpp"
 
-Codegen::Codegen(Op* head, std::string filename) : head(head) {
+Codegen::Codegen(Op* head, std::string filename, unsigned int array_size, unsigned int cell_size) : head(head), array_size(array_size), cell_size(cell_size) {
     this->label_num = 0;
     std::string output_name = "/tmp/" + filename + ".s";
     this->assembly = std::ofstream(output_name);
@@ -12,7 +12,7 @@ void Codegen::initialize_stream() {
     this->assembly << ".intel_syntax noprefix\n\n";
     this->assembly << ".section .bss\n";
     this->assembly << "tape:\n";
-    this->assembly << "\t.space 30000\n\n";
+    this->assembly << "\t.space "<< this->array_size <<"\n\n";
     this->assembly << ".section .text\n";
     this->assembly << ".global main\n";
     this->assembly << "main:\n";
