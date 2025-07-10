@@ -11,10 +11,21 @@
 #define BACK 7
 #define UNDEF 8
 
+#include <string>
+
 typedef struct operation {
     unsigned int type;
     struct operation *next;
-    operation(int type) : type(type) { }
+    operation(unsigned int type) : type(type) { }
 } Op;
+
+// hold meta data
+typedef struct program {
+    unsigned int array_size;
+    unsigned int cell_size;
+    unsigned int starting_offset;
+    std::string program_name;
+    Op *head;
+} Program;
 
 #endif

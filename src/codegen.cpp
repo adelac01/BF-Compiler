@@ -1,6 +1,6 @@
 #include "../include/codegen.hpp"
 
-Codegen::Codegen(Op* head, std::string filename, unsigned int array_size, unsigned int cell_size) : head(head), array_size(array_size), cell_size(cell_size) {
+Codegen::Codegen(Program* program, std::string filename) : program(program) {
     this->label_num = 0;
     std::string output_name = "/tmp/" + filename + ".s";
     this->assembly = std::ofstream(output_name);
@@ -12,11 +12,11 @@ void Codegen::initialize_stream() {
     this->assembly << ".intel_syntax noprefix\n\n";
     this->assembly << ".section .bss\n";
     this->assembly << "tape:\n";
-    this->assembly << "\t.space "<< this->array_size <<"\n\n";
+    this->assembly << "\t.space "<< this->program->array_size * this->program->cell_size <<"\n\n";
     this->assembly << ".section .text\n";
-    this->assembly << ".global main\n";
+    this->assembly << ".global _start\n";
     this->assembly << "_start:\n";
-    this->assembly << "\tmov rbx, 0\n\n";
+    this->assembly << "\tmov rbx, " << this->program->starting_offset << "\n\n";
     this->assembly << "main:\n";
 }
 
@@ -112,11 +112,10 @@ void Codegen::walk_ast(Op *curr) {
     }
 
     walk_ast(curr->next);
-
 }
 
 void Codegen::generate() {
     initialize_stream();
-    walk_ast(this->head);
+    walk_ast(this->program->head);
     finalize_stream();
 }

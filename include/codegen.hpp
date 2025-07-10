@@ -8,12 +8,9 @@
 
 class Codegen {
 private:
-    Op* head;
+    Program* program;
     std::string filename;
     std::ofstream assembly;
-    unsigned int label_num;
-    unsigned int array_size;
-    unsigned int cell_size;
     std::stack<unsigned int> unclosed_labels;
 
     // prepare assembly file
@@ -32,7 +29,7 @@ private:
     void gen_back();
 
 public:
-    Codegen(Op* head, std::string filename, unsigned int array_size, unsigned int cell_size);
+    Codegen(Program* program, std::string filename);
     ~Codegen();
 
     void generate();
