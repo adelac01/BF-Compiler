@@ -1,7 +1,7 @@
 #ifndef _TOKEN
 #define _TOKEN
 
-typedef enum {
+enum class Token{
     MOVE_RIGHT,
     MOVE_LEFT,
     INCREMENT,
@@ -9,7 +9,8 @@ typedef enum {
     OUTPUT,
     INPUT,
     JUMP_PAST,
-    JUMP_BACK
-} Token;
+    JUMP_BACK,
+    COMMENT_CHAR
+};
 
 #endif

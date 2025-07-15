@@ -5,40 +5,50 @@ Lexer::Lexer(std::istream& is) : input_stream(is) { }
 
 Lexer::~Lexer() { }
 
+Token Lexer::get_token(char c) {
+
+    Token result = Token::COMMENT_CHAR;
+
+    switch(c) {
+        case '>':
+            result = Token::MOVE_RIGHT;
+        break;
+        case '<':
+            result = Token::MOVE_LEFT;
+        break;
+        case '+':
+            result = Token::INCREMENT;
+        break;
+        case '-':
+            result = Token::DECREMENT;
+        break;
+        case '.':
+            result = Token::OUTPUT;
+        break;
+        case ',':
+            result = Token::INPUT;
+        break;
+        case '[':
+            result = Token::JUMP_PAST;
+        break;
+        case ']':
+            result = Token::JUMP_BACK;
+        break;
+    }
+
+    return result;
+}
+
 std::vector<Token> Lexer::produce() {
 
     std::vector<Token> token_stream;
     char c;
 
     while(input_stream >> c) {
-        switch(c) {
-            case '>':
-                token_stream.push_back(MOVE_RIGHT);
-            break;
-            case '<':
-                token_stream.push_back(MOVE_LEFT);
-            break;
-            case '+':
-                token_stream.push_back(INCREMENT);
-            break;
-            case '-':
-                token_stream.push_back(DECREMENT);
-            break;
-            case '.':
-                token_stream.push_back(OUTPUT);
-            break;
-            case ',':
-                token_stream.push_back(INPUT);
-            break;
-            case '[':
-                token_stream.push_back(JUMP_PAST);
-            break;
-            case ']':
-                token_stream.push_back(JUMP_BACK);
-            break;
-            default:
-                // do nothing
-            break;
+        Token t = this->get_token(c);
+
+        if(t != Token::COMMENT_CHAR) {
+            token_stream.push_back(t);
         }
     }
 
