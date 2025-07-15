@@ -12,6 +12,7 @@ target_include_directories(bf PRIVATE include)
 
 add_executable(run_tests tests/test_main.cpp 
     tests/test_lexer.cpp src/lexer.cpp
+    tests/test_parser.cpp src/parser.cpp
 )
 target_include_directories(run_tests PRIVATE include)
 

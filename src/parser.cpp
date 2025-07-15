@@ -6,6 +6,10 @@ Parser::Parser(std::vector<Token> token_stream) : token_stream(token_stream) {
 }
 
 Parser::~Parser() { 
+    if(this->program == nullptr) {
+        return;
+    }
+
     clear_memory(this->program->head);
     delete this->program;
 }
@@ -20,30 +24,35 @@ void Parser::clear_memory(Op *node) {
 }
 
 unsigned int Parser::consume_token() {
+
+    if(this->token_stream.size() == 0) {
+        return UNDEF;
+    }
+
     unsigned int type;
     switch(token_stream[this->stream_ptr]) {
-        case MOVE_RIGHT:
+        case Token::MOVE_RIGHT:
             type = RIGHT;
         break;
-        case MOVE_LEFT:
+        case Token::MOVE_LEFT:
             type = LEFT;
         break;
-        case INCREMENT:
+        case Token::INCREMENT:
             type = INC;
         break;
-        case DECREMENT:
+        case Token::DECREMENT:
             type = DEC;
         break;
-        case OUTPUT:
+        case Token::OUTPUT:
             type = OUT;
         break;
-        case INPUT:
+        case Token::INPUT:
             type = IN;
         break;
-        case JUMP_PAST:
+        case Token::JUMP_PAST:
             type = PAST;
         break;
-        case JUMP_BACK:
+        case Token::JUMP_BACK:
             type = BACK;
         break;
     }
@@ -65,7 +74,7 @@ Program *Parser::gen_ast(unsigned int array_size, unsigned int cell_size, unsign
     this->program->head = new Op(consume_token());
     Op *curr = this->program->head;
 
-    for(unsigned int i = 0; i < this->token_stream.size(); i++) {
+    while(this->stream_ptr < this->token_stream.size()) {
         curr->next = new Op(consume_token()); 
         curr = curr->next;
     }
