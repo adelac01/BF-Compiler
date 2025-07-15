@@ -1,7 +1,7 @@
 #include "../include/lexer.hpp"
 #include <iostream>
 
-Lexer::Lexer(std::ifstream& ifs) : input_stream(ifs) { }
+Lexer::Lexer(std::istream& is) : input_stream(is) { }
 
 Lexer::~Lexer() { }
 

@@ -19,7 +19,7 @@ public:
     Parser(std::vector<Token> token_stream);
     ~Parser();
 
-    Program *gen_ast(unsigned int array_size, unsigned int cell_size, unsigned int ptr_offset);
+    Program *gen_ast(unsigned int array_size, unsigned int cell_size, unsigned int starting_offset);
 };
 
 #endif

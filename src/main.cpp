@@ -28,7 +28,7 @@
 struct compiler_config {
     unsigned int array_size = DEFAULT_ARRAY_SIZE;
     unsigned int cell_size = DEFAULT_CELL_SIZE;
-    unsigned int ptr_offset = DEFAULT_OFFSET;
+    unsigned int starting_offset = DEFAULT_OFFSET;
     std::string output_file = "a.out";
     std::string input_file = ""; 
 };
@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     struct flag_values fv;
     unsigned int array_size = DEFAULT_ARRAY_SIZE;
     unsigned int cell_size = DEFAULT_CELL_SIZE;
-    unsigned int ptr_offset = DEFAULT_OFFSET;
+    unsigned int starting_offset = DEFAULT_OFFSET;
     std::string output_file = DEFAULT_FILENAME;
     std::string input_file, command; 
 
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
     }
 
     if(flags & SET_OFFSET) {
-        ptr_offset = fv.n_flag_value;
+        starting_offset = fv.n_flag_value;
     }
 
     if(flags & PRINT_HELP) {
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
 
     // Parsing stage
     Parser parser(token_stream);
-    Program *program = parser.gen_ast(array_size, cell_size, ptr_offset);
+    Program *program = parser.gen_ast(array_size, cell_size, starting_offset);
 
     // Codegen stage
     Codegen codegen(program, output_file);

@@ -7,10 +7,10 @@
 
 class Lexer {
 private:
-    std::ifstream& input_stream;
+    std::istream& input_stream;
 
 public:
-    Lexer(std::ifstream& ifs);
+    Lexer(std::istream& is);
     ~Lexer();
 
     std::vector<Token> produce();

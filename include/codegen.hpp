@@ -11,6 +11,7 @@ private:
     Program* program;
     std::string filename;
     std::ofstream assembly;
+    unsigned int label_num;
     std::stack<unsigned int> unclosed_labels;
 
     // prepare assembly file

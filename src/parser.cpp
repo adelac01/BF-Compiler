@@ -53,7 +53,7 @@ unsigned int Parser::consume_token() {
 }
 
 // pass in program metadata 
-Program *Parser::gen_ast(unsigned int array_size, unsigned int cell_size, unsigned int ptr_offset) {
+Program *Parser::gen_ast(unsigned int array_size, unsigned int cell_size, unsigned int starting_offset) {
 
     // if(this->token_stream.size() == 0) {
     //     return nullptr;
@@ -61,7 +61,7 @@ Program *Parser::gen_ast(unsigned int array_size, unsigned int cell_size, unsign
 
     this->program->array_size = array_size;
     this->program->cell_size = cell_size;
-    this->program->ptr_offset = ptr_offset;
+    this->program->starting_offset = starting_offset;
     this->program->head = new Op(consume_token());
     Op *curr = this->program->head;
 
