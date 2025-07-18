@@ -3,6 +3,7 @@
 
 #include "token.hpp"
 #include "ast.hpp"
+#include "metadata.hpp"
 #include <vector>
 #include <memory>
 
@@ -19,7 +20,8 @@ public:
     Parser(std::vector<Token> token_stream);
     ~Parser();
 
-    Program *gen_ast(unsigned int array_size, unsigned int cell_size, unsigned int starting_offset);
+    // void set_metadata();
+    Program *gen_ast(struct metadata &md);
 };
 
 #endif

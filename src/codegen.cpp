@@ -1,8 +1,8 @@
 #include "../include/codegen.hpp"
 
-Codegen::Codegen(Program* program, std::string filename) : program(program) {
+Codegen::Codegen(Program* program) : program(program) {
     this->label_num = 0;
-    std::string output_name = "/tmp/" + filename + ".s";
+    std::string output_name = "/tmp/" + program->md.output_file + ".s";
     this->assembly = std::ofstream(output_name);
  }
 
@@ -12,11 +12,11 @@ void Codegen::initialize_stream() {
     this->assembly << ".intel_syntax noprefix\n\n";
     this->assembly << ".section .bss\n";
     this->assembly << "tape:\n";
-    this->assembly << "\t.space "<< this->program->array_size * this->program->cell_size <<"\n\n";
+    this->assembly << "\t.space "<< this->program->md.array_size * this->program->md.cell_size <<"\n\n";
     this->assembly << ".section .text\n";
     this->assembly << ".global _start\n";
     this->assembly << "_start:\n";
-    this->assembly << "\tmov rbx, " << this->program->starting_offset << "\n\n";
+    this->assembly << "\tmov rbx, " << this->program->md.starting_offset << "\n\n";
     this->assembly << "main:\n";
 }
 

@@ -12,6 +12,7 @@
 #define UNDEF 8
 
 #include <string>
+#include "metadata.hpp"
 
 typedef struct operation {
     unsigned int type;
@@ -21,10 +22,7 @@ typedef struct operation {
 
 // hold meta data
 typedef struct program {
-    unsigned int array_size;
-    unsigned int cell_size;
-    unsigned int starting_offset;
-    std::string program_name;
+    struct metadata md;
     Op *head;
 } Program;
 

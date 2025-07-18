@@ -30,7 +30,7 @@ private:
     void gen_back();
 
 public:
-    Codegen(Program* program, std::string filename);
+    Codegen(Program* program);
     ~Codegen();
 
     void generate();

@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include "metadata.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "token.hpp"
@@ -11,10 +12,11 @@
 TEST(ParserTest, AllValidTokens) {
     using enum Token;
 
-    unsigned int array_size = 30000;
-    unsigned int cell_size = 1;
-    unsigned int starting_offset = 0;
-    std::string program_name = "program";
+    struct metadata md;
+    md.array_size = 30000;
+    md.cell_size = 1;
+    md.starting_offset = 0;
+    md.output_file = "program";
 
     unsigned int expected_num_op = 8;
     unsigned int actual_num_op = 0;
@@ -32,9 +34,9 @@ TEST(ParserTest, AllValidTokens) {
 
     Program p;
     Program *expected = &p;
-    expected->array_size = 30000;
-    expected->cell_size = 1;
-    expected->starting_offset = 0;
+    expected->md.array_size = 30000;
+    expected->md.cell_size = 1;
+    expected->md.starting_offset = 0;
 
     Op node0(PAST);
     Op node1(IN);
@@ -57,12 +59,12 @@ TEST(ParserTest, AllValidTokens) {
     expected->head = &node0;
 
     Parser parser(token_stream);
-    Program *actual = parser.gen_ast(array_size, cell_size, starting_offset);
+    Program *actual = parser.gen_ast(md);
 
     // Check metadata if they match
-    ASSERT_EQ(expected->array_size, actual->array_size);
-    ASSERT_EQ(expected->cell_size, actual->cell_size);
-    ASSERT_EQ(expected->starting_offset, actual->starting_offset);
+    ASSERT_EQ(expected->md.array_size, actual->md.array_size);
+    ASSERT_EQ(expected->md.cell_size, actual->md.cell_size);
+    ASSERT_EQ(expected->md.starting_offset, actual->md.starting_offset);
 
     // Check linked list if they match
     Op *e_curr = expected->head;
@@ -80,26 +82,29 @@ TEST(ParserTest, AllValidTokens) {
 
 
 TEST(ParserTest, EmptyFile) {
-    unsigned int array_size = 30000;
-    unsigned int cell_size = 1;
-    unsigned int starting_offset = 0;
+    struct metadata md;
+    md.array_size = 15000;
+    md.cell_size= 2;
+    md.starting_offset = 3;
+    md.output_file = "asdf";
 
     Program p;
     Program *expected = &p;
-    expected->array_size = 30000;
-    expected->cell_size = 1;
-    expected->starting_offset = 0;
+    expected->md.array_size = 15000;
+    expected->md.cell_size = 2;
+    expected->md.starting_offset = 3;
+    expected->md.output_file = "asdf";
 
     Op node0(UNDEF);
     expected->head = &node0;
 
     std::vector<Token> token_stream;
     Parser parser(token_stream);
-    Program *actual = parser.gen_ast(array_size, cell_size, starting_offset); 
+    Program *actual = parser.gen_ast(md); 
 
     // check metadata
-    ASSERT_EQ(expected->array_size, actual->array_size);
-    ASSERT_EQ(expected->cell_size, actual->cell_size);
-    ASSERT_EQ(expected->starting_offset, actual->starting_offset);
+    ASSERT_EQ(expected->md.array_size, actual->md.array_size);
+    ASSERT_EQ(expected->md.cell_size, actual->md.cell_size);
+    ASSERT_EQ(expected->md.starting_offset, actual->md.starting_offset);
     ASSERT_EQ(expected->head->type, actual->head->type);
 }

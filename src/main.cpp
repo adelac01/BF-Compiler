@@ -8,12 +8,7 @@
 #include "../include/lexer.hpp"
 #include "../include/parser.hpp"
 #include "../include/codegen.hpp"
-
-#define DEFAULT_ARRAY_SIZE 30000
-#define DEFAULT_CELL_SIZE 1
-#define DEFAULT_OFFSET 0 
-#define DEFAULT_FILENAME "a.out"
-#define FILE_NAME
+#include "../include/metadata.hpp"
 
 #define SET_OUTPUT 0x01
 #define COMPILE_ONLY 0x02
@@ -23,22 +18,6 @@
 #define PRINT_HELP 0x20
 #define SET_OFFSET 0x40
 #define FLAG_UNKNOWN 0x80
-
-// TODO: finish
-struct compiler_config {
-    unsigned int array_size = DEFAULT_ARRAY_SIZE;
-    unsigned int cell_size = DEFAULT_CELL_SIZE;
-    unsigned int starting_offset = DEFAULT_OFFSET;
-    std::string output_file = "a.out";
-    std::string input_file = ""; 
-};
-
-struct flag_values {
-    std::string o_flag_value;
-    unsigned int a_flag_value;
-    unsigned int c_flag_value;
-    unsigned int n_flag_value;
-};
 
 void print_help() {
     std::string help_string = "\
@@ -57,21 +36,21 @@ flags:\n\
     std::cout << help_string << std::endl;
 }
 
-void set_flags(uint8_t &flags, struct flag_values &fv, int &i, char **argv) {
+void set_flags(uint8_t &flags, struct metadata &md, int &i, char **argv) {
     std::string arg = argv[i];
     if(arg == "-o") {
         flags |= SET_OUTPUT;
-        fv.o_flag_value = argv[i + 1];
+        md.output_file = argv[i + 1];
         i += 1;
     } else if(arg == "-S") {
         flags |= COMPILE_ONLY;
     } else if(arg == "-a") {
         flags |= SET_ARRAY_SIZE;
-        fv.a_flag_value = std::stoi(argv[i + 1]);
+        md.array_size= std::stoi(argv[i + 1]);
         i += 1;
     } else if(arg == "-c") {
         flags |= SET_CELL_SIZE;
-        fv.c_flag_value = std::stoi(argv[i + 1]);
+        md.cell_size = std::stoi(argv[i + 1]);
         i += 1;
     } else if(arg == "-O") {
         flags |= ENABLE_OPTIMIZATIONS;
@@ -79,7 +58,7 @@ void set_flags(uint8_t &flags, struct flag_values &fv, int &i, char **argv) {
         flags |= PRINT_HELP;
     } else if(arg == "-n") {
         flags |= SET_OFFSET;
-        fv.n_flag_value = std::stoi(argv[i + 1]);
+        md.starting_offset = std::stoi(argv[i + 1]);
         i += 1;
     } else {
         flags |= FLAG_UNKNOWN;
@@ -100,12 +79,15 @@ int main(int argc, char **argv) {
      * bit 7: unrecognized flag 
      */
     uint8_t flags = 0;
-    struct flag_values fv;
-    unsigned int array_size = DEFAULT_ARRAY_SIZE;
-    unsigned int cell_size = DEFAULT_CELL_SIZE;
-    unsigned int starting_offset = DEFAULT_OFFSET;
-    std::string output_file = DEFAULT_FILENAME;
-    std::string input_file, command; 
+    std::string command; 
+
+    struct metadata md;
+    md.array_size = DEFAULT_ARRAY_SIZE;
+    md.cell_size = DEFAULT_CELL_SIZE;
+    md.starting_offset = DEFAULT_OFFSET;
+
+    md.output_file = DEFAULT_OUTFILENAME;
+
 
     if(argc < 2) {
         std::cout << "Usage: [flags] <filename>.bf" << std::endl;
@@ -113,9 +95,9 @@ int main(int argc, char **argv) {
     } else {
         for(int i = 1; i < argc; i++) {
             if(argv[i][0] == '-') {
-                set_flags(flags, fv, i, argv);
+                set_flags(flags, md, i, argv);
             } else {
-                input_file = argv[i];
+                md.input_file = argv[i];
             }
         }
     }
@@ -126,25 +108,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if(flags & SET_OFFSET) {
-        starting_offset = fv.n_flag_value;
-    }
-
     if(flags & PRINT_HELP) {
         print_help();
         return 0;
     }
 
-    if(flags & SET_ARRAY_SIZE) {
-        array_size = fv.a_flag_value; 
-    }
-
-    if(flags & SET_OUTPUT) {
-        output_file = fv.o_flag_value;
-    }
-
     // Lexer stage
-    std::ifstream ifs(input_file);
+    std::ifstream ifs(md.input_file);
     if(!ifs.is_open()) {
         std::cout << "Error: Could not find input file." << std::endl;
         return 1;
@@ -155,18 +125,19 @@ int main(int argc, char **argv) {
 
     // Parsing stage
     Parser parser(token_stream);
-    Program *program = parser.gen_ast(array_size, cell_size, starting_offset);
+    Program *program = parser.gen_ast(md);
 
     // Codegen stage
-    Codegen codegen(program, output_file);
+    Codegen codegen(program);
     codegen.generate();
 
+    // Assembly and linking stage
     if(flags & COMPILE_ONLY) {
         // move file from tmp if only doing compliation
-        command = std::format("mv /tmp/{}.s ./", output_file);
+        command = std::format("mv /tmp/{}.s ./", md.output_file);
     } else {
         // assembly and linking stage
-        command = std::format("as -o /tmp/{}.o /tmp/{}.s && ld -o {} /tmp/{}.o; rm /tmp/{}*", output_file, output_file, output_file, output_file, output_file);
+        command = std::format("as -o /tmp/{}.o /tmp/{}.s && ld -o {} /tmp/{}.o; rm /tmp/{}*", md.output_file, md.output_file, md.output_file, md.output_file, md.output_file);
     }
 
     system(command.c_str());

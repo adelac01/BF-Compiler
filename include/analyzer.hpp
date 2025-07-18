@@ -1,7 +1,7 @@
 #ifndef _OPTIMIZER
 #define _OPTIMIZER
 
-class Optimizer {
+class Analyzer {
 private:
 
 public:
