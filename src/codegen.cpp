@@ -114,7 +114,7 @@ void Codegen::walk_ast(Op *curr) {
     walk_ast(curr->next);
 }
 
-void Codegen::generate() {
+void Codegen::gen_asm() {
     initialize_stream();
     walk_ast(this->program->head);
     finalize_stream();

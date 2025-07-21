@@ -39,7 +39,7 @@ Token Lexer::get_token(char c) {
     return result;
 }
 
-std::vector<Token> Lexer::produce() {
+std::vector<Token> Lexer::gen_stream() {
 
     std::vector<Token> token_stream;
     char c;

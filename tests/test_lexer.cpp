@@ -21,7 +21,7 @@ TEST(LexerTest, ScanAllDefinedSymbols) {
 
     std::istringstream iss(test_string);
     Lexer lexer(iss);
-    std::vector<Token> token_stream = lexer.produce();
+    std::vector<Token> token_stream = lexer.gen_stream();
 
     ASSERT_EQ(token_stream.size(), expected.size());
 
@@ -50,7 +50,7 @@ TEST(LexerTest, ScanUndefinedSymbols) {
 
     std::istringstream iss(test_string);
     Lexer lexer(iss);
-    std::vector<Token> token_stream = lexer.produce();
+    std::vector<Token> token_stream = lexer.gen_stream();
 
     ASSERT_EQ(token_stream.size(), expected.size());
 

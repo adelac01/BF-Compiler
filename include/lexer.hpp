@@ -14,7 +14,7 @@ public:
     Lexer(std::istream& is);
     ~Lexer();
 
-    std::vector<Token> produce();
+    std::vector<Token> gen_stream();
 };
 
 #endif

@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     Lexer lexer(ifs);
-    std::vector<Token> token_stream = lexer.produce();
+    std::vector<Token> token_stream = lexer.gen_stream();
     ifs.close();
 
     // Parsing stage
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
     // Codegen stage
     Codegen codegen(program);
-    codegen.generate();
+    codegen.gen_asm();
 
     // Assembly and linking stage
     if(flags & COMPILE_ONLY) {

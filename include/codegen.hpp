@@ -14,7 +14,6 @@ private:
     unsigned int label_num;
     std::stack<unsigned int> unclosed_labels;
 
-    // prepare assembly file
     void initialize_stream();
     void finalize_stream();
     void walk_ast(Op *curr);
@@ -33,7 +32,7 @@ public:
     Codegen(Program* program);
     ~Codegen();
 
-    void generate();
+    void gen_asm();
 };
 
 #endif
