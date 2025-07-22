@@ -7,12 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(GTest REQUIRED)
 enable_testing()
 
-add_executable(bf src/main.cpp src/lexer.cpp src/parser.cpp src/codegen.cpp)
+add_executable(bf src/main.cpp src/lexer.cpp src/parser.cpp src/analyzer.cpp src/codegen.cpp)
 target_include_directories(bf PRIVATE include)
 
 add_executable(run_tests tests/test_main.cpp 
     tests/test_lexer.cpp src/lexer.cpp
     tests/test_parser.cpp src/parser.cpp
+    tests/test_analyzer.cpp src/analyzer.cpp
+    tests/test_codegen.cpp src/codegen.cpp
 )
 target_include_directories(run_tests PRIVATE include)
 

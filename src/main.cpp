@@ -7,17 +7,10 @@
 #include <memory>
 #include "../include/lexer.hpp"
 #include "../include/parser.hpp"
+#include "../include/analyzer.hpp"
 #include "../include/codegen.hpp"
 #include "../include/metadata.hpp"
-
-#define SET_OUTPUT 0x01
-#define COMPILE_ONLY 0x02
-#define SET_ARRAY_SIZE 0x04
-#define SET_CELL_SIZE 0x08
-#define ENABLE_OPTIMIZATIONS 0x10
-#define PRINT_HELP 0x20
-#define SET_OFFSET 0x40
-#define FLAG_UNKNOWN 0x80
+#include "../include/flags.hpp"
 
 void print_help() {
     std::string help_string = "\
@@ -67,27 +60,15 @@ void set_flags(uint8_t &flags, struct metadata &md, int &i, char **argv) {
 
 int main(int argc, char **argv) {
 
-    /**
-     * What does each bit do?
-     * bit 0: set output name
-     * bit 1: only output assembly
-     * bit 2: set array size
-     * bit 3: set cell size
-     * bit 4: enable some optimizations 
-     * bit 5: help 
-     * bit 6: unused
-     * bit 7: unrecognized flag 
-     */
     uint8_t flags = 0;
+    int error_code;
     std::string command; 
 
     struct metadata md;
     md.array_size = DEFAULT_ARRAY_SIZE;
     md.cell_size = DEFAULT_CELL_SIZE;
     md.starting_offset = DEFAULT_OFFSET;
-
     md.output_file = DEFAULT_OUTFILENAME;
-
 
     if(argc < 2) {
         std::cout << "Usage: [flags] <filename>.bf" << std::endl;
@@ -126,6 +107,14 @@ int main(int argc, char **argv) {
     // Parsing stage
     Parser parser(token_stream);
     Program *program = parser.gen_ast(md);
+
+    // Semantic analysis and optimization stage
+    Analyzer analyzer(program, flags);
+    error_code = analyzer.analyze_program();
+
+    if(error_code) {
+        return 1;
+    }
 
     // Codegen stage
     Codegen codegen(program);

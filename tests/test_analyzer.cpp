@@ -10,7 +10,7 @@ TEST(AnalyzerTest, ValidProgram) {
     uint8_t flags = 0;
 
     Program p;
-    Program *test;
+    Program *test = &p;
     test->md.array_size = 30000;
     test->md.cell_size = 1;
     test->md.starting_offset = 0;
@@ -49,7 +49,7 @@ TEST(AnalyzerTest, UnknownSymbol) {
     uint8_t flags = 0;
 
     Program p;
-    Program *test;
+    Program *test = &p;
     test->md.array_size = 30000;
     test->md.cell_size = 1;
     test->md.starting_offset = 0;
@@ -89,7 +89,7 @@ TEST(AnalyzerTest, UnclosedBracket) {
     uint8_t flags = 0;
 
     Program p;
-    Program *test;
+    Program *test = &p;
     test->md.array_size = 30000;
     test->md.cell_size = 1;
     test->md.starting_offset = 0;
@@ -126,14 +126,27 @@ TEST(AnalyzerTest, EmptyFile) {
     uint8_t flags = 0;
 
     Program p;
-    Program *test;
+    Program *test = &p;
     test->md.array_size = 30000;
     test->md.cell_size = 1;
     test->md.starting_offset = 0;
     test->md.output_file = "a.out";
+    test->head = nullptr;
 
     Analyzer analyzer(test, flags);
     actual_status = analyzer.analyze_program();
 
     ASSERT_EQ(actual_status, expected_status);
+}
+
+TEST(AnalyzerTest, ArrayWrapAround) {
+
+}
+
+TEST(AnalyzerTest, CellOverflow) {
+
+}
+
+TEST(AnalyzerTest, ConstantFolding) {
+
 }

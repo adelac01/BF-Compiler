@@ -16,8 +16,11 @@
 
 typedef struct operation {
     unsigned int type;
+    unsigned int occurence;
     struct operation *next;
-    operation(unsigned int type) : type(type) { }
+    operation(unsigned int type) : type(type) { 
+        occurence = 1;
+    }
 } Op;
 
 // hold meta data
