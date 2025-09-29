@@ -2,26 +2,28 @@
 
 Parser::Parser(std::vector<Token> token_stream) : token_stream(token_stream) {
     this->stream_ptr = 0;
-    this->program = new Program();
+    this->program = std::make_unique<Program>();
 }
 
-Parser::~Parser() { 
-    if(this->program == nullptr) {
-        return;
-    }
+Parser::~Parser() { }
 
-    clear_memory(this->program->head);
-    delete this->program;
-}
+// Parser::~Parser() { 
+//     if(this->program == nullptr) {
+//         return;
+//     }
 
-void Parser::clear_memory(Op *node) {
-    if(node == nullptr) {
-        return;
-    }
+//     clear_memory(this->program->head);
+//     delete this->program;
+// }
 
-    clear_memory(node->next);
-    delete node;
-}
+// void Parser::clear_memory(Op *node) {
+//     if(node == nullptr) {
+//         return;
+//     }
+
+//     clear_memory(node->next);
+//     delete node;
+// }
 
 unsigned int Parser::consume_token() {
 
@@ -62,17 +64,18 @@ unsigned int Parser::consume_token() {
 }
 
 // pass in program metadata 
-Program *Parser::gen_ast(struct metadata &md) {
+std::unique_ptr<Program> Parser::gen_ast(struct metadata &md) {
 
     this->program->md = md;
-    this->program->head = new Op(consume_token());
-    Op *curr = this->program->head;
+    this->program->head = std::make_unique<Op>();
+    Op* curr = this->program->head.get();
 
     while(this->stream_ptr < this->token_stream.size()) {
-        curr->next = new Op(consume_token()); 
-        curr = curr->next;
+        // curr->next = new Op(consume_token()); 
+        curr->next = std::make_unique<Op>(consume_token());
+        curr = curr->next.get();
     }
 
     curr->next = nullptr;
-    return this->program;
+    return std::move(this->program);
 }

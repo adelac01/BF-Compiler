@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 
     // Parsing stage
     Parser parser(token_stream);
-    Program *program = parser.gen_ast(md);
+    std::unique_ptr<Program> program = parser.gen_ast(md);
 
     // Semantic analysis and optimization stage
     Analyzer analyzer(program, flags);

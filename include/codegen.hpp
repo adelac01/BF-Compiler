@@ -8,7 +8,7 @@
 
 class Codegen {
 private:
-    Program* program;
+    std::unique_ptr<Program> program;
     std::string filename;
     std::ofstream assembly;
     unsigned int label_num;
@@ -29,7 +29,7 @@ private:
     void gen_back();
 
 public:
-    Codegen(Program* program);
+    Codegen(std::unique_ptr<Program> program);
     ~Codegen();
 
     void gen_asm();

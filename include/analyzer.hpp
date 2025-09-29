@@ -6,6 +6,8 @@
 #include <cstdint>
 
 // Error codes
+#define CELL_OVERFLOW -2
+#define OUT_OF_BOUNDS_ACCESS -1
 #define OK 0
 #define UNKNOWN_SYMBOL 1
 #define UNCLOSED_BRACKET 2

@@ -11,17 +11,16 @@ class Parser {
 private:
     std::vector<Token> token_stream;
     unsigned int stream_ptr;
-    Program *program;
+    std::unique_ptr<Program> program;
 
     unsigned int consume_token();
-    void clear_memory(Op *program);
 
 public:
     Parser(std::vector<Token> token_stream);
     ~Parser();
 
     // void set_metadata();
-    Program *gen_ast(struct metadata &md);
+    std::unique_ptr<Program> gen_ast(struct metadata &md);
 };
 
 #endif

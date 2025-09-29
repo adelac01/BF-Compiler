@@ -12,12 +12,14 @@
 #define UNDEF 8
 
 #include <string>
+#include <memory>
 #include "metadata.hpp"
 
 typedef struct operation {
     unsigned int type;
     unsigned int occurence;
-    struct operation *next;
+    std::unique_ptr<struct operation> next;
+    operation() { }
     operation(unsigned int type) : type(type) { 
         occurence = 1;
     }
@@ -26,7 +28,7 @@ typedef struct operation {
 // hold meta data
 typedef struct program {
     struct metadata md;
-    Op *head;
+    std::unique_ptr<Op> head;
 } Program;
 
 #endif
